@@ -1,1 +1,1 @@
-# bing-imageAPI
+# Bing Wallpaper
