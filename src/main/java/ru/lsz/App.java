@@ -13,6 +13,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Bing Wallpaper
@@ -21,25 +22,29 @@ public class App {
     static ObjectMapper mapper = new ObjectMapper();
     public static final String URI = "https://bing.biturl.top/";
 
-    public static void main(String[] args) {
-        CloseableHttpClient httpClient = HttpClientBuilder.create()
-                .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectTimeout(5000)
-                        .setSocketTimeout(30000)
-                        .setRedirectsEnabled(false)
-                        .build())
-                .build();
+    public static void main(String[] args) throws InterruptedException {
+        while (true) {
+            CloseableHttpClient httpClient = HttpClientBuilder.create()
+                    .setDefaultRequestConfig(RequestConfig.custom()
+                            .setConnectTimeout(5000)
+                            .setSocketTimeout(30000)
+                            .setRedirectsEnabled(false)
+                            .build())
+                    .build();
 
-        HttpGet request = new HttpGet(URI);
+            HttpGet request = new HttpGet(URI);
 
-        try (CloseableHttpResponse response = httpClient.execute(request)) {
-            ApiBingWallPaper apiBingWallPaper = mapper.readValue(response.getEntity().getContent(), ApiBingWallPaper.class);
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                ApiBingWallPaper apiBingWallPaper = mapper.readValue(response.getEntity().getContent(), ApiBingWallPaper.class);
 
-            saveImageToFile(apiBingWallPaper.getUrl());
+                saveImageToFile(apiBingWallPaper.getUrl());
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            TimeUnit.DAYS.sleep(1);
         }
+
     }
 
     private static void saveImageToFile(String url) {
